@@ -16,77 +16,77 @@
 namespace core {
 namespace differential_drive_kinematics {
 Inverse::Inverse(
-   const char*          name,
-   os::Thread::Priority priority
+    const char*          name,
+    os::Thread::Priority priority
 ) :
-   CoreNode::CoreNode(name, priority),
-   CoreConfigurable::CoreConfigurable(name)
+    CoreNode::CoreNode(name, priority),
+    CoreConfigurable::CoreConfigurable(name)
 {
-   _workingAreaSize = 1024;
+    _workingAreaSize = 1024;
 }
 
 Inverse::~Inverse()
 {
-   teardown();
+    teardown();
 }
 
 bool
 Inverse::onPrepareMW()
 {
-   _subscriber.set_callback(Inverse::callback);
+    _subscriber.set_callback(Inverse::callback);
 
-   this->subscribe(_subscriber, configuration().velocity_input);
-   this->advertise(_left_wheel_publisher, configuration().left_output);
-   this->advertise(_right_wheel_publisher, configuration().right_output);
+    this->subscribe(_subscriber, configuration().velocity_input);
+    this->advertise(_left_wheel_publisher, configuration().left_output);
+    this->advertise(_right_wheel_publisher, configuration().right_output);
 
-   return true;
+    return true;
 }
 
 bool
 Inverse::onLoop()
 {
-   if (!this->spin(ModuleConfiguration::SUBSCRIBER_SPIN_TIME)) {}
+    if (!this->spin(ModuleConfiguration::SUBSCRIBER_SPIN_TIME)) {}
 
-   return true;
+    return true;
 }
 
 bool
 Inverse::callback(
-   const differential_drive_msgs::Velocity& msg,
-   void*                                    context
+    const differential_drive_msgs::Velocity& msg,
+    void*                                    context
 )
 {
-   Inverse* _this = static_cast<Inverse*>(context);
+    Inverse* _this = static_cast<Inverse*>(context);
 
-   actuator_msgs::Setpoint_f32* left_speed;
-   actuator_msgs::Setpoint_f32* right_speed;
-   float v     = msg.linear;
-   float omega = msg.angular;
+    actuator_msgs::Setpoint_f32* left_speed;
+    actuator_msgs::Setpoint_f32* right_speed;
+    float v     = msg.linear;
+    float omega = msg.angular;
 
-   float d  = _this->configuration().distance;
-   float lr = _this->configuration().left_radius;
-   float rr = _this->configuration().right_radius;
+    float d  = _this->configuration().distance;
+    float lr = _this->configuration().left_radius;
+    float rr = _this->configuration().right_radius;
 
-   /// DO THE MATH
-   if (_this->_left_wheel_publisher.alloc(left_speed)) {
-      /// PUBLISH THE RESULTS
-      left_speed->value = (1 / lr) * (v + (d / 2) * omega);
+    /// DO THE MATH
+    if (_this->_left_wheel_publisher.alloc(left_speed)) {
+        /// PUBLISH THE RESULTS
+        left_speed->value = (1 / lr) * (v + (d / 2) * omega);
 
-      if (!_this->_left_wheel_publisher.publish(left_speed)) {
-         return false;
-      }
-   }
+        if (!_this->_left_wheel_publisher.publish(left_speed)) {
+            return false;
+        }
+    }
 
-   if (_this->_right_wheel_publisher.alloc(right_speed)) {
-      /// PUBLISH THE RESULTS
-      right_speed->value = -(1 / rr) * (v - (d / 2) * omega);
+    if (_this->_right_wheel_publisher.alloc(right_speed)) {
+        /// PUBLISH THE RESULTS
+        right_speed->value = -(1 / rr) * (v - (d / 2) * omega);
 
-      if (!_this->_right_wheel_publisher.publish(right_speed)) {
-         return false;
-      }
-   }
+        if (!_this->_right_wheel_publisher.publish(right_speed)) {
+            return false;
+        }
+    }
 
-   return true;
+    return true;
 } // Inverse::callback
 }
 }

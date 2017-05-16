@@ -19,44 +19,44 @@
 namespace core {
 namespace differential_drive_kinematics {
 class Forward:
-   public mw::CoreNode,
-   public mw::CoreConfigurable<ForwardConfiguration>
+    public mw::CoreNode,
+    public mw::CoreConfigurable<ForwardConfiguration>
 {
 public:
-   Forward(
-      const char*          name,
-      os::Thread::Priority priority = os::Thread::PriorityEnum::NORMAL
-   );
-   virtual
-   ~Forward();
+    Forward(
+        const char*          name,
+        os::Thread::Priority priority = os::Thread::PriorityEnum::NORMAL
+    );
+    virtual
+    ~Forward();
 
 private:
-   bool
-   onPrepareMW();
+    bool
+    onPrepareMW();
 
-   bool
-   onLoop();
+    bool
+    onLoop();
 
-   static bool
-   callback_left(
-      const core::sensor_msgs::Delta_f32& msg,
-      void*                               context
-   );
+    static bool
+    callback_left(
+        const core::sensor_msgs::Delta_f32& msg,
+        void*                               context
+    );
 
-   static bool
-   callback_right(
-      const core::sensor_msgs::Delta_f32& msg,
-      void*                               context
-   );
+    static bool
+    callback_right(
+        const core::sensor_msgs::Delta_f32& msg,
+        void*                               context
+    );
 
 
 private:
-   mw::Subscriber<core::sensor_msgs::Delta_f32, 2>  _subscriber_left;
-   mw::Subscriber<core::sensor_msgs::Delta_f32, 2>  _subscriber_right;
-   mw::Publisher<differential_drive_msgs::Velocity> _publisher;
+    mw::Subscriber<core::sensor_msgs::Delta_f32, 2>  _subscriber_left;
+    mw::Subscriber<core::sensor_msgs::Delta_f32, 2>  _subscriber_right;
+    mw::Publisher<differential_drive_msgs::Velocity> _publisher;
 
-   float _speed_right;
-   float _speed_left;
+    float _speed_right;
+    float _speed_left;
 };
 }
 }

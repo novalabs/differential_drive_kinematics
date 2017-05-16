@@ -20,35 +20,35 @@
 namespace core {
 namespace differential_drive_kinematics {
 class Inverse:
-   public mw::CoreNode,
-   public mw::CoreConfigurable<InverseConfiguration>
+    public mw::CoreNode,
+    public mw::CoreConfigurable<InverseConfiguration>
 {
 public:
-   Inverse(
-      const char*          name,
-      os::Thread::Priority priority = os::Thread::PriorityEnum::NORMAL
-   );
-   virtual
-   ~Inverse();
+    Inverse(
+        const char*          name,
+        os::Thread::Priority priority = os::Thread::PriorityEnum::NORMAL
+    );
+    virtual
+    ~Inverse();
 
 private:
-   bool
-   onPrepareMW();
+    bool
+    onPrepareMW();
 
-   bool
-   onLoop();
+    bool
+    onLoop();
 
-   static bool
-   callback(
-      const differential_drive_msgs::Velocity& msg,
-      void*                                    context
-   );
+    static bool
+    callback(
+        const differential_drive_msgs::Velocity& msg,
+        void*                                    context
+    );
 
 
 private:
-   mw::Subscriber<differential_drive_msgs::Velocity, 5> _subscriber;
-   mw::Publisher<actuator_msgs::Setpoint_f32> _left_wheel_publisher;
-   mw::Publisher<actuator_msgs::Setpoint_f32> _right_wheel_publisher;
+    mw::Subscriber<differential_drive_msgs::Velocity, 5> _subscriber;
+    mw::Publisher<actuator_msgs::Setpoint_f32> _left_wheel_publisher;
+    mw::Publisher<actuator_msgs::Setpoint_f32> _right_wheel_publisher;
 };
 }
 }
